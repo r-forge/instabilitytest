@@ -1,5 +1,5 @@
 Package: instabilityTest
-Title: Testing Markov chain instability after simulation.
+Title: Testing Markov chain instability after simulation
 Version: 0.9.0.20210913
 Authors@R: 
     c(person(given = "Sergey",
