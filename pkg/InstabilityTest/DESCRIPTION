@@ -1,0 +1,24 @@
+Package: instabilityTest
+Title: Testing Markov chain instability after simulation.
+Version: 0.9.0.20210913
+Authors@R: 
+    c(person(given = "Sergey",
+           family = "Astaf'ev",
+           role = c("aut", "cre"),
+           email = "seryymail@mail.ru",
+           comment = c(ORCID = "https://orcid.org/0000-0002-4486-798X")),
+      person(given = "Alexander",
+           family = "Rumyantsev",
+           role = c("ctb"),
+           email = "ar0@krc.karelia.ru",
+           comment = c(ORCID = "https://orcid.org/0000-0003-2364-5939"))
+           )
+Description: Allow obtain quantile for chain state to testing instability. See "Detecting Markov chain instability: a Monte Carlo approach" by M. Mandjes, B. Patch, N.S. Walton.
+License: use_mit_license() + file LICENSE
+Encoding: UTF-8
+LinkingTo: Rcpp
+Imports: Rcpp
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+NeedsCompilation: yes
