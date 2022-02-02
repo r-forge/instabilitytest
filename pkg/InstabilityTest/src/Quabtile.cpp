@@ -8,16 +8,21 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <cfloat>
+#include <algorithm>
+
+//' @useDynLib instabilityTest, .registration = TRUE
+//' @importFrom Rcpp sourceCpp
+//' @export instabilityQuantileTopEst
 
 // Хвост распределения из статьи Detecting Markov chain instability: a Monte Carlo Approach
-// @param w - значение функции в начальном состояние цепи, из которой мы начинали симуляцию.
+// @param w - предыдущее значение величины
 // @param z - значение случайной величины, стохастически мажорирующей приращение.
 // @param fi - оценка сверху модуля приращения функции за 1 шаг.
-// @param kappa - оценка снизу модуля начального состояния цепи (т.е. X_{k-1})
+// @param kappa - оценка снизу модуля начального состояния цепи
 // @param delta - "уровень значимости"
 // @param sigma - оценка снизу числа шагов алгоритма поиска (почти всегда можно брать 1)
 // @param tau - длина симуляции
-double distTail(double w, double z, double fi, double kappa, double delta, double sigma, double tau)
+inline double distTail(double w, double z, double fi, double kappa, double delta, double sigma, double tau)
 {
   double n_w = ceil(tau/sigma);
   double alpha_1 = sigma*fi-sigma*n_w*delta;
@@ -28,14 +33,14 @@ double distTail(double w, double z, double fi, double kappa, double delta, doubl
   double exp1 = -pow((z-alpha_1),2)/(2*alpha_2);
   double exp2 = -pow((z-alpha_3),2)/(2*alpha_4);
   double prob = exp(exp1)+n_w*exp(exp2);
-  return prob > 1.0 ? 1.0 : prob;
+  return prob;
 }
 
-// [[Rcpp::export]]
-double findZ(double alpha, double w, double fi, double kappa, double delta, double sigma, double tau)
+inline double findZ(double alpha, double w, double fi, double kappa, double delta, double sigma, double tau)
 {
-  double left = 0;
+  double left = std::max(0.0, kappa);
   double right = DBL_MAX;
+  // Здесь мы немного хитрим, чтобы ускорить сходимость в большинстве случаев.
   double value = (tau/sigma - left)/2;
   double prev = value;
 
@@ -57,26 +62,34 @@ double findZ(double alpha, double w, double fi, double kappa, double delta, doub
 }
 
 
-//' instabilityQuantile
-//' @description Calculation of a quantile with given parameters for a random variable stochastically dominating over a Markov chain.
-//' @param alpha the significance level.
-//' @param w initial state of Markov chain.
-//' @param fi upper estimate for the absolute value of Markov chain increment in one step.
-//' @param delta the downward drift that a process must exhibit in order to be stable.
-//' @param sigma the lower estimate for the number of steps.
-//' @param kappa the lower estimate for initial state.
-//' @param a a parameter for time calculation. Time is calculated by a formula: a*(X_{i-1})+b.
-//' @param b b parameter for time calculation. Time is calculated by a formula: a*(X_{i-1})+b.
-//' @param k number of steps to select a new point.
-//' @return Quantile with given parameters
+//' @title instabilityQuantileTopEst
+//' @param alpha - уровень значимости
+//' @param fi - оценка сверху модуля приращения функции за 1 шаг.
+//' @param delta - отрицательный снос. В большинстве случаев можно задать равным 0.01 или 0.05
+//' @param sigma - оценка снизу числа шагов алгоритма поиска нестабильного лямбда (почти всегда можно брать 1)
+//' @param kappa - оценка снизу модуля начального состояния цепи
+//' @param a - множитель, определящий время следующей симуляции
+//' @param b - добавка, определяющая время следующей симуляции
+//' @param k - число шагов алгоритма.
 // [[Rcpp::export]]
-double instabilityQuantile(double alpha, double w, double fi, double delta, double sigma, double kappa, double a, double b, double k)
+double instabilityQuantileTopEst(double alpha, double fi, double delta, double sigma, double kappa, double a, double b, double k)
 {
+  // У нас хвост распределения. По этому всё наоборот.
+  alpha = 1 - alpha;
   double res = 0;
-  double last = w;
   for(unsigned int i = 0; i < k; i++){
-    last = findZ(alpha, w, fi, kappa, delta, sigma, res*a+b);
-    res = res + last;
+    res += findZ(alpha, res, fi, kappa, delta, sigma, res*a+b);
   }
   return res;
 }
+
+// [[Rcpp::export]]
+double genWk(double fi, double delta, double sigma, double kappa, double a, double b, Rcpp::NumericVector u)
+{
+  double res = 0;
+  for(uint_fast64_t i = 0; i < u.size(); i++){
+    res +=  findZ(u[i], res, fi, kappa, delta, sigma, res*a+b);
+  }
+  return res;
+}
+

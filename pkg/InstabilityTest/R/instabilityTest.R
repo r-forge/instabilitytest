@@ -1,30 +1,33 @@
 # Original file name: "instabilityTest.R"
 # Created: 2020.12.16
-# Last modified: 2020.12.17
+# Last modified: 2022.02.02
 # License: MIT
 # Written by: Astaf'ev Sergey <seryymail@mail.ru>
 # This is a part of instabilityTest R package.
 
-#' instabilityTest
-#' @useDynLib instabilityTest, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
+#' @export genWkSample
+#' @export getInstabilityQuantile
 
-#' @export instabilityTest
-#' @export instabilityQuantile
+#' @importFrom stats runif
+#' @importFrom stats quantile
 
-#' @name instabilityTest
-#' @description Test simulation result on instability.
-#' @param w increment of Markov chain in simulation time.
-#' @param fi upper estimate for the absolute value of Markov chain increment in one step.
-#' @param kappa lower estimate for the initial state of Markov chain.
-#' @param delta the downward drift that a process must exhibit in order to be stable. Significance level analogue.
-#' @param tau simulation time.
-#' @return TRUE, if  Markov chain is instable. FALSE doesn't mean that chain is stable.
-instabilityTest = function(w, fi, kappa, delta, tau)
+#' @title genWkSample
+#' @inheritParams instabilityQuantileTopEst
+#' @param N - размер выборки
+genWkSample = function(fi, delta, sigma, kappa, a, b, k, N)
 {
-  if (w > findZ(0, fi, kappa, delta, 1, tau)){
-    return (TRUE)
-  }else{
-    return (FALSE)
+  sample = rep(0, N)
+  for(i in 1:N){
+    sample[i] = genWk(fi, delta, sigma, kappa, a, b, runif(k))
   }
+  return(sample)
+}
+
+#' @title getInstabilityQuantile
+#' @param alpha - уровень значимости
+#' @inheritParams instabilityQuantileTopEst
+getInstabilityQuantile = function(alpha, fi, delta, sigma, kappa, a, b, k)
+{
+  sample = genWkSample(fi, delta, sigma, kappa, a, b, k, 1/min(alpha, 1-alpha)*1000)
+  return(quantile(sample, names = FALSE, probs = alpha))
 }

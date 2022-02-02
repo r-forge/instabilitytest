@@ -10,31 +10,13 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// findZ
-double findZ(double alpha, double w, double fi, double kappa, double delta, double sigma, double tau);
-RcppExport SEXP _instabilityTest_findZ(SEXP alphaSEXP, SEXP wSEXP, SEXP fiSEXP, SEXP kappaSEXP, SEXP deltaSEXP, SEXP sigmaSEXP, SEXP tauSEXP) {
+// instabilityQuantileTopEst
+double instabilityQuantileTopEst(double alpha, double fi, double delta, double sigma, double kappa, double a, double b, double k);
+RcppExport SEXP _instabilityTest_instabilityQuantileTopEst(SEXP alphaSEXP, SEXP fiSEXP, SEXP deltaSEXP, SEXP sigmaSEXP, SEXP kappaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP kSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< double >::type w(wSEXP);
-    Rcpp::traits::input_parameter< double >::type fi(fiSEXP);
-    Rcpp::traits::input_parameter< double >::type kappa(kappaSEXP);
-    Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(findZ(alpha, w, fi, kappa, delta, sigma, tau));
-    return rcpp_result_gen;
-END_RCPP
-}
-// instabilityQuantile
-double instabilityQuantile(double alpha, double w, double fi, double delta, double sigma, double kappa, double a, double b, double k);
-RcppExport SEXP _instabilityTest_instabilityQuantile(SEXP alphaSEXP, SEXP wSEXP, SEXP fiSEXP, SEXP deltaSEXP, SEXP sigmaSEXP, SEXP kappaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< double >::type w(wSEXP);
     Rcpp::traits::input_parameter< double >::type fi(fiSEXP);
     Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
@@ -42,14 +24,31 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type a(aSEXP);
     Rcpp::traits::input_parameter< double >::type b(bSEXP);
     Rcpp::traits::input_parameter< double >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(instabilityQuantile(alpha, w, fi, delta, sigma, kappa, a, b, k));
+    rcpp_result_gen = Rcpp::wrap(instabilityQuantileTopEst(alpha, fi, delta, sigma, kappa, a, b, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// genWk
+double genWk(double fi, double delta, double sigma, double kappa, double a, double b, Rcpp::NumericVector u);
+RcppExport SEXP _instabilityTest_genWk(SEXP fiSEXP, SEXP deltaSEXP, SEXP sigmaSEXP, SEXP kappaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP uSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type fi(fiSEXP);
+    Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type u(uSEXP);
+    rcpp_result_gen = Rcpp::wrap(genWk(fi, delta, sigma, kappa, a, b, u));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_instabilityTest_findZ", (DL_FUNC) &_instabilityTest_findZ, 7},
-    {"_instabilityTest_instabilityQuantile", (DL_FUNC) &_instabilityTest_instabilityQuantile, 9},
+    {"_instabilityTest_instabilityQuantileTopEst", (DL_FUNC) &_instabilityTest_instabilityQuantileTopEst, 8},
+    {"_instabilityTest_genWk", (DL_FUNC) &_instabilityTest_genWk, 7},
     {NULL, NULL, 0}
 };
 
