@@ -22,9 +22,8 @@
 // @param delta - "уровень значимости"
 // @param sigma - оценка снизу числа шагов алгоритма поиска (почти всегда можно брать 1)
 // @param tau - длина симуляции
-inline double distTail(double w, double z, double fi, double kappa, double delta, double sigma, double tau)
+inline double distTail(double w, double z, double fi, double kappa, double delta, double sigma, double n_w)
 {
-  double n_w = ceil(tau/sigma);
   double alpha_1 = sigma*fi-sigma*n_w*delta;
   double alpha_2 = pow(((fi+delta)*sigma),2)*n_w;
   double alpha_3 = sigma*fi-w+kappa;
@@ -38,17 +37,27 @@ inline double distTail(double w, double z, double fi, double kappa, double delta
 
 inline double findZ(double alpha, double w, double fi, double kappa, double delta, double sigma, double tau)
 {
-  double left = std::max(0.0, kappa);
-  double right = DBL_MAX;
+  double n_w = ceil(tau/sigma);
+  // Сужаем границы хитрым способом, что-бы ускорить сходимость без потери точности.
+  double left = std::max(0.0, std::min((fi-delta*n_w)*sigma, sigma*fi+kappa-w));
+  double r1 = (-delta*n_w+fi+2*sqrt(537)*sqrt(log(2))*sqrt(n_w*pow(fi+delta, 2)))*sigma;
+  double r2 = sigma*fi+kappa-w+sqrt(2)*sqrt(n_w*pow(fi*sigma,2)*(1074*log(2)+log(n_w)));
+  double right = std::min(DBL_MAX, std::max(r1, r2));
   // Здесь мы немного хитрим, чтобы ускорить сходимость в большинстве случаев.
-  double value = (tau/sigma - left)/2;
+  //double value = 2*w;
+  double v1 = (-delta*n_w+fi+2*sqrt(15)*sqrt(log(2))*sqrt(n_w*pow(fi+delta, 2)))*sigma;
+  double v2 = sigma*fi+kappa-w+sqrt(2)*sqrt(n_w*pow(fi*sigma,2)*(30*log(2)+log(n_w)));
+  double value = std::max(abs(v1), abs(v2));
   double prev = value;
 
+  if(distTail(w, left, fi, kappa, delta, sigma, n_w) < alpha){
+    return left;
+  }
   // Двоичный поиск. Мы можем его использовать, поскольку
   // хвост распределения это монотонна убывающая функция
   do
   {
-    double prob = distTail(w, value, fi, kappa, delta, sigma, tau);
+    double prob = distTail(w, value, fi, kappa, delta, sigma, n_w);
     if(prob <= alpha){
       right = value;
     } else{
