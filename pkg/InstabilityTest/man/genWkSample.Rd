@@ -4,39 +4,15 @@
 \alias{genWkSample}
 \title{genWkSample}
 \usage{
-genWkSample(fi, delta, sigma, kappa, a, b, k, N)
+genWkSample(fi, delta, sigma, kappa, a, b, k, N, sample = NULL)
 }
 \arguments{
-\item{fi}{\itemize{
-\item оценка сверху модуля приращения функции за 1 шаг.
-}}
-
-\item{delta}{\itemize{
-\item отрицательный снос. В большинстве случаев можно задать равным 0.01 или 0.05
-}}
-
-\item{sigma}{\itemize{
-\item оценка снизу числа шагов алгоритма поиска нестабильного лямбда (почти всегда можно брать 1)
-}}
-
-\item{kappa}{\itemize{
-\item оценка снизу модуля начального состояния цепи
-}}
-
-\item{a}{\itemize{
-\item множитель, определящий время следующей симуляции
-}}
-
-\item{b}{\itemize{
-\item добавка, определяющая время следующей симуляции
-}}
-
-\item{k}{\itemize{
-\item число шагов алгоритма.
-}}
-
 \item{N}{\itemize{
 \item размер выборки
+}}
+
+\item{sample}{\itemize{
+\item выборка, ранее уже сгенерированная этой функцией.
 }}
 }
 \description{

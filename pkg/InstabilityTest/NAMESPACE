@@ -2,7 +2,6 @@
 
 export(genWkSample)
 export(getInstabilityQuantile)
-export(instabilityQuantileTopEst)
 importFrom(Rcpp,sourceCpp)
 importFrom(stats,quantile)
 importFrom(stats,runif)

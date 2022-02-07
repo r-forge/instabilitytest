@@ -3,23 +3,9 @@
 
 #' @useDynLib instabilityTest, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
-#' @export instabilityQuantileTopEst
 NULL
 
-#' @title instabilityQuantileTopEst
-#' @param alpha - уровень значимости
-#' @param fi - оценка сверху модуля приращения функции за 1 шаг.
-#' @param delta - отрицательный снос. В большинстве случаев можно задать равным 0.01 или 0.05
-#' @param sigma - оценка снизу числа шагов алгоритма поиска нестабильного лямбда (почти всегда можно брать 1)
-#' @param kappa - оценка снизу модуля начального состояния цепи
-#' @param a - множитель, определящий время следующей симуляции
-#' @param b - добавка, определяющая время следующей симуляции
-#' @param k - число шагов алгоритма.
-instabilityQuantileTopEst <- function(alpha, fi, delta, sigma, kappa, a, b, k) {
-    .Call(`_instabilityTest_instabilityQuantileTopEst`, alpha, fi, delta, sigma, kappa, a, b, k)
-}
-
-genWk <- function(fi, delta, sigma, kappa, a, b, u) {
-    .Call(`_instabilityTest_genWk`, fi, delta, sigma, kappa, a, b, u)
+genWk <- function(w, fi, delta, sigma, kappa, a, b, u) {
+    .Call(`_instabilityTest_genWk`, w, fi, delta, sigma, kappa, a, b, u)
 }
 
