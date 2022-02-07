@@ -66,7 +66,8 @@ inline double findZ(double alpha, double w, double fi, double kappa, double delt
 double genWk(double w, double fi, double delta, double sigma, double kappa, double a, double b, Rcpp::NumericVector u)
 {
   double res = w;
-  for(uint_fast64_t i = 0; i < u.size(); i++){
+  uint_fast64_t m =  u.size();
+  for(uint_fast64_t i = 0; i < m; i++){
     res +=  findZ(u[i], res, fi, kappa, delta, sigma, res*a+b);
   }
   return res;
